@@ -54,8 +54,8 @@
 		#	d.run "rabbitmq"
 		#	#, args:  "-d --name nginx-server -p 80:80 nginx"
 		#end
-		config.vm.provision "shell", path: '/vagrant/share/build/docker/docker-compose.sh', run: "once"
+		config.vm.provision "shell", path: './share/build/docker/docker-compose.sh', run: "once"
 		config.vm.provision :docker
-		config.vm.provision "shell", path: '/vagrant/share/build/docker/init.sh', run: "always"
+		config.vm.provision "shell", path: './share/build/docker/init.sh', run: "always"
 	end
 
