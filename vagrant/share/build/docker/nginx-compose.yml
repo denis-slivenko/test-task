@@ -1,15 +1,6 @@
 version: '2'
 
 services:
- php:
-   image: php:fpm
-   ports:
-     - "9000:9000"
-   volumes:
-      - /vagrant/build/docker/www:/var/www/html
-     # - /vagrant/build/docker/www:/usr/share/nginx/html
-   networks:
-      - internal
  nginx:
    # используем последний стабильный образ nginx
    image: nginx:latest
@@ -21,7 +12,6 @@ services:
    volumes:
      - /vagrant/build/docker/nginx:/etc/nginx/conf.d
      - /vagrant/build/docker/www:/var/www/html
-     
    links:
      - php
    networks:

@@ -1,0 +1,14 @@
+[Unit]
+Description=php
+Requires=docker.service
+After=docker.service
+[Service]
+RemainAfterExit=yes
+Restart=always
+ExecStart=/usr/bin/docker start docker_php_1
+ExecStop=/usr/bin/docker stop docker_php_1
+PIDFile=/tmp/pids/docker_php_1.pid
+TimeoutSec=30
+[Install]
+WantedBy=multi-user.target
+ 
