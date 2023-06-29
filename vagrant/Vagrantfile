@@ -35,9 +35,7 @@
 	  config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 	  config.vm.post_up_message = "HTTP access: http://localhost/"
 	  config.vm.synced_folder "./share", "/vagrant", create: true, owner: "root", group: "root", mount_options: ["dmode=755","fmode=644"], type: "rsync" # Настроить каталог монтирования, соответствующий виртуальной машине
-	  #config.vm.provision "file", source: "./share/build/docker/php.service", destination: "/etc/systemd/system/php.service"
-	  
-	  
+	 
   # install docker and docker-compose
 	
 	 config.vm.provision "shell", inline: 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf', run: "always"
@@ -52,9 +50,8 @@
 	#	sudo cp /vagrant/build/docker/php.service /etc/systemd/system/php.service
 	#	sudo cp /vagrant/build/docker/nginx.service /etc/systemd/system/nginx.service
 	#   SHELL
-	   
+	config.vm.provision :docker  
 	config.vm.provision "shell", path: './share/build/docker/docker-compose.sh', run: "once"
-	config.vm.provision :docker
 	config.vm.provision "shell", path: './share/build/docker/init.sh', run: "always"
 	config.vm.provision "shell", inline: 'sudo cp /vagrant/build/docker/php.service /etc/systemd/system/php.service', run: "always"
 	config.vm.provision "shell", inline: 'sudo cp /vagrant/build/docker/nginx.service /etc/systemd/system/nginx.service', run: "always"
