@@ -1,0 +1,61 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+##required_plugins = %w(vagrant-hostsupdater)
+##plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+##if not plugins_to_install.empty?
+##  puts "Installing plugins: #{plugins_to_install.join(' ')}"
+##  if system "vagrant plugin install #{plugins_to_install.join(' ')}"
+##    exec "vagrant #{ARGV.join(' ')}"
+##  else
+##    abort "Installation of one or more plugins has failed. Aborting."
+##  end
+##end
+
+#config.vm.provider:virtualbox do |vb|
+#    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+ #   vb.name = "satom-srv"
+ #   vb.memory = 1024
+ ##   vb.cpus = 2
+ # end
+
+	Vagrant.configure("2") do |config|
+	 
+	  config.vm.box = "generic/ubuntu2204"
+	  config.vm.hostname = "satom-srv.local"
+	  #config.ssh.insert_key = false
+	  config.hostsupdater.aliases = [
+		"satom.local"
+	  ]
+	  config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+	  config.vm.post_up_message = "HTTP access: http://localhost/"
+	  config.vm.synced_folder "./share", "/vagrant", create: true, owner: "root", group: "root", mount_options: ["dmode=755","fmode=644"], type: "rsync" # Настроить каталог монтирования, соответствующий виртуальной машине 
+	  
+	  
+  # install docker and docker-compose
+	
+	 config.vm.provision "shell", inline: 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf', run: "always"
+	  #config.vm.provision "shell", inline: <<-SHELL
+	    #sudo apt-get update
+	    #sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose docker-compose-plugin
+		# sudo /usr/local/bin/docker-compose -f /vagrant/share/docker-compose.yml build
+		#sudo /usr/local/bin/docker-compose -f /vagrant/share/docker-compose.yml up -d
+	    #sudo chmod +x /usr/local/bin/docker-compose
+	   #SHELL
+	   
+	   #config.vm.provision :docker
+		#config.vm.provision "docker" do |d|
+		#d.pull_images "nginx"
+		#	d.run "rabbitmq"
+		#	#, args:  "-d --name nginx-server -p 80:80 nginx"
+		#end
+		config.vm.provision "shell", path: '/vagrant/share/build/docker/docker-compose.sh', run: "once"
+		config.vm.provision :docker
+		config.vm.provision "shell", path: '/vagrant/share/build/docker/init.sh', run: "always"
+	end
+

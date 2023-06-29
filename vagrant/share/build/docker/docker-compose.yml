@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+ php:
+   image: php:fpm
+   ports:
+     - "9000:9000"
+   volumes:
+      - /vagrant/build/docker/www:/var/www/html
+     # - /vagrant/build/docker/www:/usr/share/nginx/html
+   networks:
+      - internal
+   #healthcheck: #Проверка работы приложения внутри контейнера
+   #   test: ["CMD","php-fpm","-t"] #Команда теста, которую мы хотим выполнить
+   #   interval: 3s #Интервал попыток запуска теста
+   #   timeout: 5s #Отложенность запуска команды
+   #   retries: 5 #Количество повторений
+   #   start_period: 1s #Через сколько стартовать тест после запуска контейнера
+ nginx:
+   # используем последний стабильный образ nginx
+   image: nginx:latest
+   # маршрутизируем порты
+   ports:
+    - "80:80"
+    - "443:443"
+   # монтируем директории, слева директории на машине , справа - куда они монтируются в контейнере
+   volumes:
+     - /vagrant/build/docker/nginx:/etc/nginx/conf.d
+    # - /vagrant/build/docker/www:/usr/share/nginx/html
+     - /vagrant/build/docker/www:/var/www/html
+    # nginx должен общаться с php контейнером
+   # depends_on: #Устанавливаем последовательность загрузки контейнеров
+   #   php: # php-контейнер запуститься раньше Nginx
+   #     condition: service_healthy #Устанавливаем условия при котором запуститься контейнер nginx
+   links:
+     - php
+   networks:
+      - internal
+ 
+networks:
+  internal:
+    driver: bridge
